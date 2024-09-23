@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <query id="select all">
+        SELECT * FROM EMP
+    </query>
+
+</database>
