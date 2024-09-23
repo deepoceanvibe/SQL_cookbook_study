@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-    <query id="select all">
-        SELECT * FROM EMP
+    <query id="selectCase">
+        <![CDATA[
+        SELECT
+            E_NAME
+            ,SAL
+            ,CASE WHEN SAL <= 2000 THEN 'UNDERPAID'
+                  WHEN SAL >= 4000 THEN 'OVERPAID'
+                  ELSE 'OK'
+            END AS STATUS
+        FROM EMP
+        ]]>
     </query>
+
+    <!--반환 행 제한-->
+    <query id="selectFetch">
+        SELECT *
+        FROM EMP
+            FETCH FIRST 5 ROWS ONLY
+    </query>
+
+    <query id="selectLimit">
+        SELECT *
+        FROM EMP
+            LIMIT 5
+    </query>
+
 
 </database>
