@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
+    <!--Chap01. 레코드 컴색-->
+
     <query id="selectCase">
         <![CDATA[
         SELECT
@@ -26,5 +28,39 @@
             LIMIT 5
     </query>
 
+    <!--로우 5 랜덤 셀렉트-->
+    <query id="selectRand">
+        SELECT ENAME, JOB
+            FROM EMP
+        ORDER BY RAND() LIMIT 5
+    </query>
+
+    <query id="selectIsNull">
+        SELECT * FROM EMP
+            WHERE COMM IS NULL  <!--COMM이 NULL인 행 찾기-->
+    </query>
+
+    <!--COMM이 NULL이 아닐 때 반환, NULL이면 0반환-->
+    <query id="selectCoalesce">
+        SELECT
+            COALESCE(COMM, 0)
+        FROM EMP
+    </query>
+
+    <query id="selectCaseNull">
+        SELECT
+            CASE WHEN COMM IS NOT NULL THEN COMM
+                ELSE 0
+            END AS C
+        FROM EMP
+    </query>
+
+    <query id="selectWhereLike">
+        SELECT
+            ENAME, JOB
+        FROM EMP
+            WHERE ORG_NO IN (10,20)
+                AND (ENAME LIKE '%I%' OR JOB LIKE '%ER') <!--이름에 I가 있거나, 직급이 ER로 끝나는-->
+    </query>
 
 </database>
