@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+
+    <!--Chap02. 정렬-->
+
+    <query id="selectOrderByDesc">
+        SELECT ENAME, JOB, SAL
+            FROM EMP
+        WHERE DEPT_NO = 10
+            ORDER BY SAL DESC <!--내림차순-->
+    </query>
+
+    <query id="selectOrderByNum">
+        SELECT ENAME, JOB, SAL
+            FROM EMP
+        WHERE DEPTNO = 10
+            ORDER BY 3 <!--DESC 세번째 열인 SAL을 DESC-->
+    </query>
+
+    <!--복수의 열을 정렬할 때, 우선순위는 왼쪽부터이다.
+    SELECT 목록에 없는 열로 정렬할 수도 있는데, 열 이름을 명시적으로 지정해야 한다.
+    하지만 GROUP BY나 DISTINCT를 사용하면 목록에 없는 열 기준으로 정렬할 수 없다.-->
+    <query id="selectOrderByColumns">
+        SELECT EMP_NO
+                ,DEPT_NO
+                ,SAL
+                ,ENAME
+                ,JOB
+        FROM EMP
+            ORDER BY DEPT_NO, SAL DESC
+    </query>
+
+    <query id="selectOrderBySubstr">
+        SELECT ENAME, JOB
+            FROM EMP
+        ORDER BY SUBSTR( JOB, LENGTH(JOB)-1 )   <!--JOB컬럼의 마지막 두 문자 기준으로 정렬-->
+    </query>
+
+    <!--문자와 숫자가 결합된 데이터에서 문자 혹은 숫자로만 정렬
+    현재 MYSQL에서는 지원하는 문법이 없어, ORACLE로 대체한다.-->
+    <query id="selectOrderByReplaceTranslate">
+        SELECT DATA
+            FROM V
+        ORDER BY REPLACE(
+                 TRANSLATE(DATA, '0123456789', '#########'). '#'. '')
+    </query>
+
+    <!--ORDER BY를 했을 때 NULL이 있는 경우-->
+    <query id="selectOrderByIsNull1">
+        SELECT ENAME, SAL, COMM
+        FROM (
+            SELECT ENAME, SAL, COMM
+                CASE WHEN COMM IS NULL THEN 0
+                ELSE 1
+                END AS IS_NULL
+            FROM EMP
+        ) X     <!--임시테이블 X에 컬럼들과 COMM이 NULL이면 0, 아니면 1을 저장하는 컬럼을 저장한다. (FROM 서브쿼리)-->
+
+        ORDER BY IS_NULL DESC, COMM
+        <!--임시테이블 X에서 ENAME, SAL, COMM을 조회하는데
+        IS_NULL컬럼 기준으로 내림차순(1->0)이니, NULL이 아닌 COMM이 먼저 표시되고
+        그 중에서 COMM이 오름차순으로 정렬된 후 마지막에 NULL인 COMM이 정렬됨.
+        -->
+    </query>
+
+    <query id="selectOrderByIsNull2">
+        SELECT ENAME, SAL, COMM
+        FROM (
+            SELECT ENAME, SAL, COMM,
+                CASE WHEN COMM IS NULL THEN 0
+                ELSE 1
+                END AS IS_NULL
+            FROM EMP
+        ) X
+        ORDER BY IS_NULL DESC, COMM DESC
+        <!--NULL이 아닌 COMM이 내림차순으로 먼저 표시된다.-->
+    </query>
+
+    <query id="selectOrderByIsNull3">
+        SELECT ENAME, SAL, COMM
+            FROM (
+                SELECT ENAME, SAL, COMM
+                    CASE WHEN COMM IS NULL THEN 0
+                    ELSE 1
+                    END AS IS_NULL
+                FROM EMP
+            ) X
+        ORDER BY IS_NULL, COMM
+        <!--NULL인 COMM이 먼저 표시되고, 오름차순으로 정렬된다.-->
+    </query>
+
+    <query id="selectOrderByISNull4">
+        SELECT ENAME, SAL, COMM
+            FROM (
+                SELECT ENAME, SAL, COMM
+                    CASE WHEN COMM IS NULL THEN 0
+                    ELSE 1
+                    END AS IS_NULL
+                FROM EMP
+            ) X
+        ORDER BY IS_NULL, COMM DESC
+        <!--NULL인 COMM이 먼저 표시되고, 내림차순으로 정렬된다.-->
+    </query>
+
+    <query id="selectOrderByCase">
+        SELECT ENAME, JOB, COMM
+            FROM EMP
+        ORDER BY
+            CASE WHEN JOB = 'SALESMAN'
+                THEN COMM
+                ELSE SAL
+            END
+    </query>
+
+
+
+
+</database>
