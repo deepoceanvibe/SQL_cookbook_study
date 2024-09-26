@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <!--테이블 결합-->
+
+    <!--UNION ALL은 중복항목이 있으면 다 포함한다.
+    중복을 빼려면 UNION을 쓰자. BUT DISTICNT와 비슷한 기능을 해서 지양해야 한다.-->
+    <query id="unionAll">
+        SELECT
+            ENAME AS ENAME_AND_DNAME,
+            DEPT_NO
+        FROM EMP
+            WHERE DEPT_NO = 10
+        UNION ALL
+        SELECT '-------------', NULL
+            FROM T1
+        UNION ALL
+            SELECT DNAME_DEPT_NO
+        FROM DEPT
+    </query>
+
+    <query id=""></query>
+
+
+
+
+
+</database>
