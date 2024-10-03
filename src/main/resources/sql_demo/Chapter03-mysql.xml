@@ -18,10 +18,78 @@
         FROM DEPT
     </query>
 
-    <query id=""></query>
+    <!--E.DEPTNO와 D.DEPTNO가 '같은 것'만 가져오기-->
+    <query id="equiJoin">
+        SELECT E.ENAME, D.LOC
+            FROM EMP E, DEPT D
+        WHERE E.DEPTNO = D.DEPTNO
+            AND E.DEPNO = 10
+    </query>
 
+    <query id="equiJoin2">
+        SELECT E.ENAME, D.LOC,
+                D.DEPTNO AS EMP_DEPTNO,
+                D.DEPTNO AS DEPT_DEPTNO
+        FROM EMP E, DEPT D
+            WHERE E.EPTNO = D.DEPTNO
+            AND E.DEPTNO = 10
+    </query>
 
+    <query id="innerJoin">
+        SELECT E.ENAME, D.LOC
+            FROM EMP E
+        INNER JOIN DEPT D
+            ON E.DEPTNO = D.DEPTNO
+        WHERE E.DEPTNO = 10
+    </query>
 
+    <query id="findSameValue">
+        SELECT E.EMPNO, E.ENAME, E.JOB, E.SAL, E.DEPTNO
+            FROM EMP E, V
+        WHERE E.ENAME = V.ENAME
+            AND E.JOB = V.JOB
+            AND E.SAL = V.SAL
+    </query>
 
+    <query id="findSameValue2">
+        SELECT E.EMPNO, E.ENAME, E.JOB, E.SAL, E.DEPTNO
+            FROM EMP E
+        INNER JOIN V
+            ON E.ENAME = V.ENAME
+            AND E.JOB = V.JOB
+            AND E.SAL = V.SAL
+    </query>
+
+    <!--한 테이블에서 다른 테이블에 없는 값 검색하기 (차집합) -->
+    <query id="notIn">
+        SELECT DEPTNO
+            FROM DEPT
+        WHERE DEPTNO NOT IN (SELECT DEPTNO FROM EMP)
+    </query>
+
+    <query id="distinctNotIn">
+        SELECT DISTINCT DEPTNO
+            FROM DEPT
+        WHERE DEPTNO NOT IN (SELECT DEPTNO FROM EMP)
+    </query>
+
+    <!--결과: 10-->
+    <!--IN과 NOT IN은 본질적으로 OR연산이다.
+    DEPTNO =10 OR =50 OR =NULL
+    T OR F OR N
+    T OR N
+    T-->
+    <query id="NullInSubQuery">
+        SELECT DEPTNO
+            FROM DEPT
+        WHERE DEPTNO IN (10, 50, NULL)
+    </query>
+
+    <!--결과: 10-->
+    <query id="NullInSubQuery2">
+        SELECT DEPTNO
+            FROM DEPT
+        WHERE (DEPTNO = 10 OR DEPTNO = 50 OR DEPTNO = NULL)
+    </query>
 
 </database>
