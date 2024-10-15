@@ -79,17 +79,43 @@
     T OR F OR N
     T OR N
     T-->
-    <query id="NullInSubQuery">
+    <query id="nullInSubQuery">
         SELECT DEPTNO
             FROM DEPT
         WHERE DEPTNO IN (10, 50, NULL)
     </query>
 
     <!--결과: 10-->
-    <query id="NullInSubQuery2">
+    <query id="nullInSubQuery2">
         SELECT DEPTNO
             FROM DEPT
         WHERE (DEPTNO = 10 OR DEPTNO = 50 OR DEPTNO = NULL)
+    </query>
+
+    <!--결과: NO ROWS-->
+    <query id="nullInSubQuery3">
+        SELECT DEPT_NO
+            FROM DEPT
+        WHERE DEPT_NO NOT IN (10, 50, NULL)
+    </query>
+
+    <!--결과: NO ROWS-->
+    <query id="nullInsSubQuery4">
+            SELECT DEPT_NO
+        FROM DEPT
+            WHERE NOT (DEPT_NO=10 OR DEP_NO=50 OR DEPT_NO=NULL)
+    </query>
+
+    <!-- TRUE OR NULL = TRUE / FALSE OR NULL = NULL -->
+
+    <query id="notExists">
+        SELECT D.DEPT_NO
+            FROM DEPT D
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM EMP E
+            WHERE D.DEPT_NO = E.DEPT_NO
+        )
     </query>
 
 </database>
