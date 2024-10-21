@@ -118,4 +118,35 @@
         )
     </query>
 
+    <!--왼쪽은 무조건 표시하고, 오른쪽이랑 매치되는게 없으면 NULL을 표시한다.-->
+    <query id="leftOuterJoin">
+        SELECT D.*
+            FROM DEPT D
+        LEFT OUTER JOIN EMP E
+            ON D.DEPT_NO = E.DEPT_NO
+        WHERE E.DEPT_NO IS NULL
+    </query>
+
+    <!--다른 조인을 방해하지 않고 쿼리에 조인 추가할 수 있다.
+    데이터 손실 없이 기준 테이블의 해당 레코드는 다 표시하지만
+    추가 정보(조인할 테이블)를 얻고싶을 경우-->
+    <query id="leftOuterJoin">
+        SELECT E.ENAME, D.LOC, EB.RECEIVED
+            FROM EMP E
+        INNER JOIN DEPT D
+            ON E.DEPTNO = D.DEPTNO
+        LEFT OUTER JOIN EMP_BONUS EB
+            ON E.EMPNO = EB.EMPNO
+        ORDER BY 2
+    </query>
+
+    <!--스칼라 서브쿼리: SELECT에 있는 서브쿼리 를 통해 외부조인을 흉내낼 수 있다.-->
+    <query id="scalarSubQuery">
+        SELECT E.ENAME, D.LOC,
+            (SELECT EB.RECEIVED FROM EMP_BONUS EB WHERE EB.EMP_NO = E.EMP_NO) AS RECEIVED
+        FROM EMP E, DEPT D
+            WHERE E.DEPTNO = D.DEPTNO
+        ORDER BY 2
+    </query>
+
 </database>
