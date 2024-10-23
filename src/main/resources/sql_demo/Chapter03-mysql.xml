@@ -149,4 +149,76 @@
         ORDER BY 2
     </query>
 
+    <!--차집합 찾기-->
+    <query id="unionAll">
+        SELECT *
+        FROM (
+                SELECT E.EMPNO, E.ENAME, E.JOB, E.MGR, E.HIREDATE,
+                E.SAL, E.COMM, E.DEPTNO, COUNT(*) AS CNT
+                FROM EMP E
+                GROUP BY EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMMM, DEPTNO
+            ) E
+        WHERE NOT EXISTS (
+            SELECT NULL
+            FROM (
+                SELECT V.EMPNO, V.ENAME, V.JOB, V.MGR, V.HIREDATE,
+                V.SAL, V.COMM, V.DEPTNO, COUNT(*) AS CNT
+                FROM V
+                GROUP BY EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO
+            ) V
+            WHERE V.EMPNO     = E.EMPNO
+            AND V.ENAME       = E.ENAME
+            AND V.JOB         = E.JOB
+            AND COALESCE(V.MGR,0) = COALESCE(E.MGR,0)
+            AND V.HIREDATE    = E.HIREDATE
+            AND V.SAL         = E.SAL
+            AND V.DEPTNO      = E.DEPTNO
+            AND V.CNT         = E.CNT
+            AND COALESCE(V.COMM,0) = COALESCE(E.COMM,0)
+        )
+            UNION ALL
+        SELECT *
+        FROM (
+            SELECT V.EMPNO, V.ENAME, V.JOB, V.MGR, V.HIREDATE,
+                    V.SAL, V.COMM, V.DEPTNO, COUNT(*) AS CNT
+            FROM V
+            GROUP BY EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO
+        ) V
+        WHERE NOT EXISTS (
+            SELECT NULL
+            FROM (
+                SELECT E.EMPNO, E.ENAME, E.JOB, E.MGR, E.HIREDATE,
+                        E.SAL, E.COMM, E.DEPTNO, COUNT(*) AS CNT
+                FROM EMP E
+                GROUP BY EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO
+            ) E
+            WHERE V.EMPNO       = E,EMPNO
+              AND V.ENAME       = E.ENAME
+              AND V.JOB         = E.JOB
+              AND COALESCE(V.MGR,0) = COALESCE(E.MGR,0)
+              AND V.HIREDATE    = E.HIREDATE
+              AND V.SAL         = E.SAL
+              AND V.DEPTNO      = E.DEPTNO
+              AND V.CNT         = E.CNT
+              AND COALESCE(V.COMM,0) = COALESCE(E.COMM,0)
+        )
+
+        <!--1. EMP 테이블의 행 가운데, 뷰 V에 존재하지 않는 행을 찾는다.
+        2. EMP 테이블에 없는 뷰 V의 행과 1번 행을 결합(UNION ALL)한다.
+
+        -> 두 테이블이 동일하면 결과는 반환되지 않는다.
+        테이블이 다르면 차이가 있는 레코드를 반환한다.-->
+    </query>
+
+    <!--두 테이블이 동일한건지 카디널리티로만 확인하는 방법2
+    UNION은 중복을 제거하므로 테이블의 카디널리티가 같으면 하나의 행만 반환된다.
+    두 행이 반환된다면 두 테이블에서 서로 다른 행이 포함되어 있다는 걸 알 수 있다.-->
+    <query id="union">
+        SELECT COUNT(*)
+        FROM EMP
+        UNION
+        SELECT COUNT(*)
+        FROM DEPT
+    </query>
+
 </database>
