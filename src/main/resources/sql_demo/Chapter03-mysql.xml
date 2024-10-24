@@ -221,4 +221,66 @@
         FROM DEPT
     </query>
 
+    <query id="fromJoin">
+        SELECT E.ENAME, D.LOC
+        FROM EMP E, DEPT D
+        WHERE E.DEPTNO = 10
+            AND D.DEPTNO = E.DEPTNO
+    </query>
+
+    <query id="fromJoin2">
+        SELECT E.EMPNO,
+                E.ENAME,
+                E.SAL,
+                E.DEPTNO,
+                E.SAL * CASE WHEN EB.TYPE = 1 THEN .1
+                             WHEN EB.TYPE = 2 THEN .2
+                             ELSE .3
+                        END AS BONUS
+        FROM EMP E, EMP_BONUS EB
+        WHERE E.EMPNO = EB.EMPNO
+            AND E.DEPTNO = 10
+    </query>
+
+    <query id="joinDistinct">
+        SELECT DEPTNO,
+                SUM(DISTINCT SAL) AS TOTAL_SAL,
+                SUM(BONUS) AS TOTAL_BONUS
+        FROM (
+            SELECT E.EMPNO
+                    E.ENAME,
+                    E.SAL,
+                    E.DEPTNO,
+                    E.SAL*CASE WHEN EB.TYPE = 1 THEN .1
+                                WHEN EB.TYPE = 2 THEN .2
+                            ELSE .3
+                    END AS BONUS
+            FROM EMP E, EMP_BONUS EB
+        WHERE E.EMPNO = EB.EMPNO
+        AND E.DEPTNO = 10
+        ) X
+        GROUP BY DEPTNO
+    </query>
+
+    <query id="joinDistinct">
+        SELECT D.DEPTNO,
+                D.TOTAL_SAL,
+                SUM( E.SAL*CASE WHEN EB.TYPE = 1 THEN .1
+                                WHEN EB.TYPE = 2 THEN .2
+                                ELSE.3 END ) AS TOTAL_BONUS
+        FROM EMP E,
+            EMP_BONUS EB,
+            (
+                SELECT DEPTNO, SUM(SAL) AS TOTAL_SAL
+                FROM EMP
+                WHERE DEPTNO = 10
+                GROUP BY DEPTNO
+            ) D
+        WHERE E.DEPTNO = D.DEPTNO
+            AND E.EMPNO = EB.EMPNO
+        GROUP BY D.DEPTNO, D.TOTAL_SAL
+    </query>
+
+
+
 </database>
