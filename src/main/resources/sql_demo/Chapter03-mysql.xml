@@ -281,6 +281,66 @@
         GROUP BY D.DEPTNO, D.TOTAL_SAL
     </query>
 
+    <!--집계시 외부조인 사용하기-->
+    <query id="leftOuterJoinSum">
+        SELECT DEPTNO,
+                SUM(DISTINCT SAL) AS TOTAL_SAL,
+                SUM(BONUS) AS TOTAL_BONUS
+        FROM (
+            SELECT E.EMPNO,
+                    E.ENAME,
+                    E.SAL,
+                    E.DEPTNO,
+                    E.SAL*CASE WHEN EB.TYPE IS NULL THEN 0
+                                WHEN EB.TYPE = 1 THEN .1
+                                WHEN EB.TYPE = 2 THEN .2
+                                ELSE .3 END AS BONUS
+            FROM EMP E LEFT OUTER JOIN EMP_BONUS EB
+            ON E.EMPNO = EB.EMPNO
+            WHERE E.DEPTNO = 10
+        )
+        GROUP BY DEPTNO
+    </query>
+
+    <query id="sumOver">
+        SELECT DISTINCT DEPTNO, TOTAL_SAL, TOTAL_BONUS
+        FROM (
+            SELECT E.EMPNO,
+                    E.ENAME,
+                    SUM(DISTINCT E.SAL) OVER
+                    (PARTITION BY E.DEPTNO) AS TOTAL_SAL,
+                    E.DEPTNO,
+                    SUM(E.SAL*CASE WHEN EB.TYPE IS NULL THEN 0
+                                    WHEN EB.TYPE = 1 THEN .1
+                                    WHEN EB.TYPE = 2 THEN .2
+                                    ELSE .3
+                        END ) OVER
+                    (PARTITION BY DEPTNO) AS TOTAL_BONUS
+            FROM EMP E LEFT OUTER JOIN EMP_BONUS EB
+            ON E.EMPNO = EB.EMPNO
+            WHERE E.DEPTNO = 10
+        ) X
+    </query>
+
+    <query id="joinSum">
+        SELECT D.DEPTNO,
+                D.TOTAL_SAL,
+                SUM(E.SAL*CASE WHEN EB.TYPE = 1 THEN .1
+                                WHEN EB.TYPE = 2 THEN .2
+                                ELSE .3 END) AS TOTAL_BONUS
+        FROM EMP E,
+            EMP_BONUS EB,
+            (
+                SELECT DEPTNO, SUM(SAL) AS TOTAL_SAL
+                FROM EMP
+                WHERE DEPTNO = 10
+                GROUP BY DEPTNO
+            ) D
+        WHERE E.DEPTNO = D,DEPTNO
+        AND E.EMPNO = EB.EMPNO
+        GROUP BY D.DEPTNO, D.TOTAL_SAL
+    </query>
+
 
 
 </database>
