@@ -322,7 +322,7 @@
         ) X
     </query>
 
-    <query id="joinSum">
+    <query id="joinSumNotOuterJoin">
         SELECT D.DEPTNO,
                 D.TOTAL_SAL,
                 SUM(E.SAL*CASE WHEN EB.TYPE = 1 THEN .1
@@ -339,6 +339,37 @@
         WHERE E.DEPTNO = D,DEPTNO
         AND E.EMPNO = EB.EMPNO
         GROUP BY D.DEPTNO, D.TOTAL_SAL
+    </query>
+
+    <!--외부조인을 두테이블 다 걸고싶은 경우 but MYSQL에는 없음-->
+    <query id="fullOuterJoin">
+        SELECT D.DEPTNO, D.DNAME, E.ENAME
+        FROM DEPT D FULL OUTER JOIN EMP E
+        ON D.DEPTNO = E.DEPTNO
+    </query>
+
+    <!--MYSQL에서는 UNION(중복제거)을 사용하자.-->
+    <query id="union">
+        SELECT D.DEPTNO, D.DNAME, E.ENAME
+        FROM DEPT D RIGHT OUTER JOIN EMP E
+        ON D.DEPTNO = E.DEPTNO
+
+        UNION
+
+        SELECT D.DEPTNO, D.DNAME, E.ENAME
+        FROM DEPT D LEFT OUTER JOIN EMP E
+        ON D.DEPTNO = E.DEPTNO
+    </query>
+
+    <!--NULL값을 다른 값으로 대체 (EX. 0)-->
+    <query id="coalesce">
+        SELECT ENAME, COMM
+        FROM EMP
+        WHERE COALESCE(COMM, 0) < (
+                                    SELECT COMM
+                                    FROM EMP
+                                    WHERE ENAME = 'WARD'
+                                    )
     </query>
 
 
